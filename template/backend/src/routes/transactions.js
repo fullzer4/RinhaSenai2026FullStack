@@ -2,13 +2,22 @@ import prisma from '../db.js'
 
 export default async function (fastify) {
 
-  // POST /api/transactions -- criar transacao
+  // GET /api/health
+  fastify.get('/health', async () => ({ status: 'ok' }))
+
+  // GET /api/balance
+  fastify.get('/balance', async (req, reply) => {
+    // TODO: implementar
+    reply.code(501).send({ error: 'Nao implementado ainda!' })
+  })
+
+  // POST /api/transactions
   fastify.post('/transactions', async (req, reply) => {
     // TODO: implementar
     reply.code(501).send({ error: 'Nao implementado ainda!' })
   })
 
-  // GET /api/transactions/:id -- consultar transacao
+  // GET /api/transactions/:id
   fastify.get('/transactions/:id', async (req, reply) => {
     const tx = await prisma.transaction.findUnique({
       where: { id: req.params.id },
@@ -17,7 +26,7 @@ export default async function (fastify) {
     return formatTransaction(tx)
   })
 
-  // GET /api/transactions?page=1&limit=10 -- listar com paginacao
+  // GET /api/transactions?page=1&limit=10
   fastify.get('/transactions', async (req) => {
     const page = Math.max(1, parseInt(req.query.page) || 1)
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10))
@@ -43,7 +52,7 @@ export default async function (fastify) {
     }
   })
 
-  // POST /api/transactions/:id/refund -- estornar transacao
+  // POST /api/transactions/:id/refund
   fastify.post('/transactions/:id/refund', async (req, reply) => {
     // TODO: implementar
     reply.code(501).send({ error: 'Nao implementado ainda!' })
