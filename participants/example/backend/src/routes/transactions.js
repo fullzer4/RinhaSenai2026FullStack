@@ -253,10 +253,12 @@ export default async function (fastify) {
     }
 
     // Atomically update only if still approved (prevents double refund)
-    const result = await prisma.transaction.updateMany({
-      where: { id, status: 'approved' },
-      data: { status: 'refunded' },
-    })
+    const result = await withRetry(() =>
+      prisma.transaction.updateMany({
+        where: { id, status: 'approved' },
+        data: { status: 'refunded' },
+      })
+    )
 
     if (result.count === 0) {
       return reply.code(422).send({ error: 'Transacao ja foi estornada' })
