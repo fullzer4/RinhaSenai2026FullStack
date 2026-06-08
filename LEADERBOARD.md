@@ -1,9 +1,8 @@
 # 🏆 Leaderboard -- Rinha FullStack SENAI 2026
 
-> Atualizado em: 2026-06-08 17:18:01 UTC
+> Atualizado em: 2026-06-08 19:42:14 UTC
 
-| # | Time | Testes | Status |
-|---|------|--------|--------|
-| 1 | example | 73/73 | ✅ Perfeito |
+| # | Time | Pontos | Testes | Throughput | P95 | Status |
+|---|------|--------|--------|------------|-----|--------|
 
 📋 [Resultado completo](./RESULTS.md)
