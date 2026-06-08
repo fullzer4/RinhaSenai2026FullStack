@@ -271,31 +271,23 @@ O benchmark usa **classes CSS** para localizar elementos via Playwright. Layout 
 
 ## Desafios tecnicos
 
+### Idempotencia
+
+O bench envia a **mesma requisicao** multiplas vezes simultaneamente. O sistema **nao pode** criar transacoes duplicadas. Se dois requests identicos chegarem ao mesmo tempo, apenas **uma** transacao deve existir no banco.
+
+O bench valida isso: percorre o historico inteiro e confere que nao ha duplicatas.
+
 ### SQLite e concorrencia
 
-- Ativar **WAL mode**: `PRAGMA journal_mode=WAL`
-- Configurar **busy timeout**: `PRAGMA busy_timeout=5000`
-- Tratar `SQLITE_BUSY` e Prisma `P2034` (transaction conflict)
+SQLite so permite uma escrita por vez. Com multiplas requisicoes simultaneas, o banco vai retornar erros se nao estiver configurado corretamente. Pesquise sobre **WAL mode** e **busy timeout**.
 
 ### Race condition no limite diario
 
-```
-Aba 1: SELECT SUM -> R$4.800 (cabe R$200)
-Aba 2: SELECT SUM -> R$4.800 (cabe R$200)
-Aba 1: INSERT R$300 -> aprova (total R$5.100 -- ERRADO!)
-```
-
-Usar `prisma.$transaction` para garantir atomicidade.
+O bench manda multiplas transacoes do **mesmo cartao** ao mesmo tempo. Se a checagem do limite nao for atomica, o limite pode ser ultrapassado.
 
 ### Double refund
 
-O bench clica estorno de 2 abas ao mesmo tempo. Usar:
-
-```sql
-UPDATE transactions SET status='refunded' WHERE id=? AND status='approved'
-```
-
-Se 0 rows affected = ja foi estornado.
+O bench manda estorno da **mesma transacao** de 2 requests ao mesmo tempo. O sistema deve estornar apenas uma vez.
 
 ---
 
@@ -303,6 +295,6 @@ Se 0 rows affected = ja foi estornado.
 
 | Categoria | Pontos | O que testa |
 |-----------|--------|-------------|
-| Regras de negocio | 50 | Taxas, juros, limites, estorno, concorrencia |
+| Regras de negocio | 50 | Taxas, juros, limites, estorno, idempotencia, concorrencia |
 | Frontend | 30 | Classes CSS, formulario, historico, paginacao |
 | Stress test | 20 | 200 txns concorrentes, throughput, latencia p95 |
