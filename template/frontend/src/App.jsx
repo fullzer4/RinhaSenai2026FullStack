@@ -1,4 +1,4 @@
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, Link } from 'react-router'
 import Dashboard from './pages/Dashboard.jsx'
 import History from './pages/History.jsx'
 import Detail from './pages/Detail.jsx'
