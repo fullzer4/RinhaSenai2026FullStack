@@ -45,20 +45,6 @@ O bench automatico testa 3 categorias:
 - **Read/Write concorrente** (50 writes + 50 reads simultaneos)
 - **Idempotencia** e **double refund** sob concorrencia
 
-## Estrutura do repo
-
-```
-├── template/              # Projeto base (copie para participar)
-├── participants/          # Solucoes dos times
-├── bench/                 # Benchmark automatico (Playwright)
-├── .github/workflows/     # CI/CD
-│   ├── pr-validate.yml    # Valida estrutura do PR
-│   ├── pr-bench.yml       # Roda benchmark e posta resultado
-│   └── main-rank.yml      # Gera leaderboard apos merge
-├── IDEIA.md               # Regras de negocio detalhadas
-└── RESUMO.md              # Resumo do desafio
-```
-
 ## Como participar
 
 1. Faca um fork deste repo
