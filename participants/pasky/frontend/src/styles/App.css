@@ -28,6 +28,17 @@
   opacity: 0.9;
 }
 
+.header-avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 5%;
+  border: 3px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
 .main-content {
   flex: 1;
   overflow-y: auto;

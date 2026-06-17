@@ -107,18 +107,25 @@
 }
 
 .btn-refund {
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.8rem;
   background: var(--danger);
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 600;
+  font-size: 0.8rem;
   transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .btn-refund:hover {
   opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.btn-refund:active {
+  transform: scale(0.95);
 }
 
 .pagination {

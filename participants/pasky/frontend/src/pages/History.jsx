@@ -4,6 +4,14 @@ import '../styles/History.css'
 
 const API_URL = 'http://localhost:3000/api'
 
+const statusTranslation = {
+  'approved': 'Aprovada',
+  'declined': 'Recusada',
+  'refunded': 'Estornada'
+}
+
+const getStatusLabel = (status) => statusTranslation[status] || status
+
 export default function History() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [transactions, setTransactions] = useState([])
@@ -63,7 +71,7 @@ export default function History() {
               <Link key={t.id} to={`/transaction/${t.id}`} className="transaction-item">
                 <div className="item-header">
                   <span className={`transaction-status status-${t.status}`} data-value={t.status}>
-                    {t.status.toUpperCase()}
+                    {getStatusLabel(t.status)}
                   </span>
                   <span className="transaction-brand" data-value={t.card_brand}>
                     {t.card_brand.toUpperCase()}

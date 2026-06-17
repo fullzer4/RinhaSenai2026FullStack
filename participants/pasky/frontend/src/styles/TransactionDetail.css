@@ -67,17 +67,17 @@
 }
 
 .btn-refund {
-  width: 100%;
-  padding: 1rem;
+  padding: 0.75rem 1.5rem;
   background: var(--danger);
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
   margin-top: 1.5rem;
   transition: all 0.3s ease;
+  width: auto;
 }
 
 .btn-refund:hover {

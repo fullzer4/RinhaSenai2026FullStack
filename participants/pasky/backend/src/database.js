@@ -15,29 +15,60 @@ export function initDatabase() {
         db.run('PRAGMA foreign_keys = ON', (err) => {
           if (err) reject(err)
           else {
-            db.run(`
-              CREATE TABLE IF NOT EXISTS transactions (
-                id TEXT PRIMARY KEY,
-                card_number TEXT NOT NULL,
-                card_last4 TEXT NOT NULL,
-                card_brand TEXT NOT NULL,
-                holder_name TEXT NOT NULL,
-                expiration TEXT NOT NULL,
-                cvv TEXT NOT NULL,
-                amount_cents INTEGER NOT NULL,
-                fee_cents INTEGER NOT NULL,
-                net_amount INTEGER NOT NULL,
-                total_with_interest INTEGER NOT NULL,
-                installment_amount INTEGER NOT NULL,
-                installments INTEGER NOT NULL,
-                description TEXT NOT NULL,
-                status TEXT NOT NULL,
-                created_at TEXT NOT NULL,
-                updated_at TEXT NOT NULL
-              )
-            `, (err) => {
+            db.run('PRAGMA journal_mode = WAL', (err) => {
               if (err) reject(err)
-              else resolve(db)
+              else {
+                db.run('PRAGMA synchronous = NORMAL', (err) => {
+                  if (err) reject(err)
+                  else {
+                    db.run('PRAGMA cache_size = 10000', (err) => {
+                      if (err) reject(err)
+                      else {
+                        db.run(`
+                          CREATE TABLE IF NOT EXISTS transactions (
+                            id TEXT PRIMARY KEY,
+                            card_number TEXT NOT NULL,
+                            card_last4 TEXT NOT NULL,
+                            card_brand TEXT NOT NULL,
+                            holder_name TEXT NOT NULL,
+                            expiration TEXT NOT NULL,
+                            cvv TEXT NOT NULL,
+                            amount_cents INTEGER NOT NULL,
+                            fee_cents INTEGER NOT NULL,
+                            net_amount INTEGER NOT NULL,
+                            total_with_interest INTEGER NOT NULL,
+                            installment_amount INTEGER NOT NULL,
+                            installments INTEGER NOT NULL,
+                            description TEXT NOT NULL,
+                            status TEXT NOT NULL,
+                            created_at TEXT NOT NULL,
+                            updated_at TEXT NOT NULL
+                          )
+                        `, (err) => {
+                          if (err) reject(err)
+                          else {
+                            // Criar índices para melhor performance
+                            db.run('CREATE INDEX IF NOT EXISTS idx_card_last4 ON transactions(card_last4)', (err) => {
+                              if (err) reject(err)
+                              else {
+                                db.run('CREATE INDEX IF NOT EXISTS idx_status ON transactions(status)', (err) => {
+                                  if (err) reject(err)
+                                  else {
+                                    db.run('CREATE INDEX IF NOT EXISTS idx_created_at ON transactions(created_at)', (err) => {
+                                      if (err) reject(err)
+                                      else resolve(db)
+                                    })
+                                  }
+                                })
+                              }
+                            })
+                          }
+                        })
+                      }
+                    })
+                  }
+                })
+              }
             })
           }
         })

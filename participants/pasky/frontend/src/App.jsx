@@ -12,6 +12,14 @@ export default function App() {
       <div className="app">
         <Navbar />
 
+         <div className="header-content">
+            <img src="/imagemsecret.jpeg" alt="Avatar" className="header-avatar" />
+          <div className="header-text">
+            <h1>Bem-vindo ao Sistema de Pagamento</h1>
+            <p>Gerencie suas transações e saldo de forma simples e segura.</p>
+          </div>
+        </div>
+
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Dashboard />} />

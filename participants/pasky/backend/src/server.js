@@ -9,6 +9,12 @@ const app = express()
 app.use(cors())
 app.use(bodyParser.json())
 
+// Aumentar limite de conexões
+app.use((req, res, next) => {
+  res.header('Connection', 'keep-alive')
+  next()
+})
+
 // Inicializar banco de dados
 await initDatabase()
 
@@ -50,13 +56,35 @@ app.post('/api/transactions', async (req, res) => {
   try {
     const { card_number, holder_name, expiration, cvv, amount_cents, installments = 1, description } = req.body
 
-    // Validar formulário
+    // VALIDAÇÕES
     const errors = validateForm({ card_number, holder_name, expiration, cvv, amount_cents, description })
     if (errors.length > 0) return res.status(422).json({ message: errors[0] })
 
-    // Validar bandeira
     const brand = validateCardBrand(card_number)
     if (!brand) return res.status(422).json({ message: 'Bandeira desconhecida' })
+
+    // IDEMPOTÊNCIA: Verificar se já existe transação identica nos ultimos 2 minutos
+    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString()
+    const existingTransaction = await dbGet(
+      `SELECT * FROM transactions 
+       WHERE card_number = ? 
+       AND amount_cents = ? 
+       AND description = ? 
+       AND created_at > ?
+       LIMIT 1`,
+      [card_number, amount_cents, description, twoMinutesAgo]
+    )
+
+    if (existingTransaction) {
+      return res.status(201).json({
+        id: existingTransaction.id,
+        status: existingTransaction.status,
+        card_last4: existingTransaction.card_last4,
+        amount_cents: existingTransaction.amount_cents,
+        fee_cents: existingTransaction.fee_cents,
+        net_amount: existingTransaction.net_amount
+      })
+    }
 
     // Cartão começa com 9999 = recusado
     if (card_number.startsWith('9999')) {
@@ -174,4 +202,15 @@ app.get('/api/balance', async (req, res) => {
 })
 
 const PORT = 3000
-app.listen(PORT, () => console.log(`🚀 Backend rodando em http://localhost:${PORT}`))
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Backend rodando em http://localhost:${PORT}`)
+})
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM recebido, encerrando...')
+  server.close(() => {
+    console.log('Servidor encerrado')
+    process.exit(0)
+  })
+})
