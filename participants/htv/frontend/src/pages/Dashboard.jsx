@@ -91,7 +91,7 @@ export default function Dashboard() {
 
       {/*Feedback*/}
       {feedback && (
-        <div className={feedback.type === 'sucess' ? 'feedback-sucess' : 'feedback-error'}>
+        <div className={feedback.type === 'sucess' ? 'feedback-success' : 'feedback-error'}>
           {feedback.message}
           </div>
       )}
@@ -114,7 +114,7 @@ export default function Dashboard() {
           <input
           className="input-holder-name"
           value={holderName}
-          onChage={e => setHolderName(e.target.value)}
+          onChange={e => setHolderName(e.target.value)}
           placeholder = "João Silva"
         />
         </div>
@@ -181,14 +181,14 @@ export default function Dashboard() {
           <div>
             <p>
               Saldo líquido:{ '' }
-              <span className="display-total-approved" data-value={balance.balance_cents}>
+              <span className="display-balance" data-value={balance.balance_cents}>
                 R$ {(balance.balance_cents / 100).toFixed(2)}
               </span>
             </p>
 
             <p>
               Total aprovadas: { ' '}
-              <span className="display-total-approved" data-value={balance.total_approved}>
+              <span className="display-balance" data-value={balance.total_approved}>
               {balance.total_approved}
               </span>
             </p>
