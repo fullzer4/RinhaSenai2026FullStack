@@ -1,0 +1,164 @@
+{
+  "rules": [
+    {
+      "name": "Health check",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "POST retorna 201",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "name": "Idempotencia retorna 200",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "name": "Bandeira mastercard (5xxx)",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "name": "Bandeira amex (3xxx)",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "name": "Bandeira elo (6xxx)",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "name": "Cartao 9999 declined",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "name": "Bandeira invalida 422",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "total_with_interest correto (15919)",
+      "ok": false,
+      "detail": "recebido=undefined"
+    },
+    {
+      "name": "Juros 4%/mes (7x)",
+      "ok": false,
+      "detail": "esperado=131594 recebido=undefined"
+    },
+    {
+      "name": "Parcela minima R$10 422",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "name": "Balance funciona",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "name": "Paginacao funciona",
+      "ok": false,
+      "detail": ""
+    }
+  ],
+  "frontend": [
+    {
+      "name": "Dashboard carrega",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .input-card-number",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .display-balance",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "name": "Pagina /history carrega",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Lista de transacoes existe",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "name": "Paginacao .pagination-current",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "name": "Pagina /transaction/:id carrega",
+      "ok": false,
+      "detail": "sem transacoes"
+    },
+    {
+      "name": "SPA fallback (/history sem query)",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "stress": [
+    {
+      "name": "0/200 transacoes criadas",
+      "ok": false,
+      "detail": "200 err500, 0 err422"
+    },
+    {
+      "name": "Idempotencia concorrente",
+      "ok": false,
+      "detail": "201=0 200=0"
+    },
+    {
+      "name": "Read/Write concorrente",
+      "ok": false,
+      "detail": "0/50 writes, 0/50 reads"
+    }
+  ],
+  "metrics": {
+    "throughput": 0,
+    "stress_elapsed_ms": 389,
+    "stress_created": 0,
+    "stress_total": 200,
+    "latency_p50_ms": 34,
+    "latency_p95_ms": 55,
+    "latency_p99_ms": 69,
+    "latency_avg_ms": 37
+  },
+  "summary": {
+    "pass": 5,
+    "fail": 19,
+    "total": 24
+  },
+  "scoring": {
+    "rules": {
+      "pass": 2,
+      "total": 13,
+      "score": 8,
+      "max": 50
+    },
+    "frontend": {
+      "pass": 3,
+      "total": 8,
+      "score": 11,
+      "max": 30
+    },
+    "stress": {
+      "pass": 0,
+      "total": 3,
+      "score": 0,
+      "max": 20
+    },
+    "total": 19
+  }
+}

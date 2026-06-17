@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { join } from 'node:path'
 import Fastify from 'fastify'
 import fastifyStatic from '@fastify/static'
