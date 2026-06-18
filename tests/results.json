@@ -7,32 +7,47 @@
     },
     {
       "name": "POST retorna 201",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Status approved",
       "ok": false,
       "detail": ""
     },
     {
       "name": "Idempotencia retorna 200",
-      "ok": false,
+      "ok": true,
       "detail": ""
     },
     {
       "name": "Bandeira mastercard (5xxx)",
-      "ok": false,
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Taxa mastercard 3% (600)",
+      "ok": true,
       "detail": ""
     },
     {
       "name": "Bandeira amex (3xxx)",
-      "ok": false,
+      "ok": true,
       "detail": ""
     },
     {
       "name": "Bandeira elo (6xxx)",
-      "ok": false,
+      "ok": true,
       "detail": ""
     },
     {
       "name": "Cartao 9999 declined",
-      "ok": false,
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Declined salvo (201)",
+      "ok": true,
       "detail": ""
     },
     {
@@ -42,27 +57,52 @@
     },
     {
       "name": "total_with_interest correto (15919)",
-      "ok": false,
-      "detail": "recebido=undefined"
+      "ok": true,
+      "detail": "recebido=15919"
     },
     {
-      "name": "Juros 4%/mes (7x)",
-      "ok": false,
-      "detail": "esperado=131594 recebido=undefined"
+      "name": "installment_amount com ceil (5307)",
+      "ok": true,
+      "detail": "recebido=5307"
     },
     {
-      "name": "Parcela minima R$10 422",
-      "ok": false,
+      "name": "Taxa sobre amount_cents (375)",
+      "ok": true,
       "detail": ""
     },
     {
-      "name": "Balance funciona",
+      "name": "net_amount correto (14625)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Juros 4%/mes (7x)",
+      "ok": true,
+      "detail": "esperado=131594 recebido=131594"
+    },
+    {
+      "name": "Parcela minima R$10 422",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Estorno approved -> refunded",
       "ok": false,
+      "detail": "status=undefined"
+    },
+    {
+      "name": "Balance funciona",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Declined nao conta no saldo",
+      "ok": true,
       "detail": ""
     },
     {
       "name": "Paginacao funciona",
-      "ok": false,
+      "ok": true,
       "detail": ""
     }
   ],
@@ -104,61 +144,81 @@
     },
     {
       "name": "SPA fallback (/history sem query)",
-      "ok": true,
+      "ok": false,
       "detail": ""
     }
   ],
   "stress": [
     {
-      "name": "0/200 transacoes criadas",
-      "ok": false,
-      "detail": "200 err500, 0 err422"
+      "name": "200/200 transacoes criadas",
+      "ok": true,
+      "detail": "0 err500, 0 err422"
+    },
+    {
+      "name": "Zero erros 500",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Throughput >= 50 txn/s",
+      "ok": true,
+      "detail": "496 txn/s, 403ms"
+    },
+    {
+      "name": "P95 < 500ms",
+      "ok": true,
+      "detail": "p50=37ms p95=53ms p99=55ms avg=38ms"
     },
     {
       "name": "Idempotencia concorrente",
+      "ok": true,
+      "detail": "201=1 200=9"
+    },
+    {
+      "name": "Apenas 1 estorno concorrente",
       "ok": false,
-      "detail": "201=0 200=0"
+      "detail": "0 estornos"
     },
     {
       "name": "Read/Write concorrente",
-      "ok": false,
-      "detail": "0/50 writes, 0/50 reads"
+      "ok": true,
+      "detail": "50/50 writes, 50/50 reads"
     }
   ],
   "metrics": {
-    "throughput": 0,
-    "stress_elapsed_ms": 389,
-    "stress_created": 0,
+    "throughput": 496,
+    "stress_elapsed_ms": 403,
+    "stress_created": 200,
     "stress_total": 200,
-    "latency_p50_ms": 34,
-    "latency_p95_ms": 55,
-    "latency_p99_ms": 69,
-    "latency_avg_ms": 37
+    "latency_p50_ms": 37,
+    "latency_p95_ms": 53,
+    "latency_p99_ms": 55,
+    "latency_avg_ms": 38
   },
   "summary": {
-    "pass": 5,
-    "fail": 19,
-    "total": 24
+    "pass": 27,
+    "fail": 9,
+    "total": 36
   },
   "scoring": {
     "rules": {
-      "pass": 2,
-      "total": 13,
-      "score": 8,
+      "pass": 19,
+      "total": 21,
+      "score": 45,
       "max": 50
     },
     "frontend": {
-      "pass": 3,
+      "pass": 2,
       "total": 8,
-      "score": 11,
+      "score": 8,
       "max": 30
     },
     "stress": {
-      "pass": 0,
-      "total": 3,
-      "score": 0,
+      "pass": 6,
+      "total": 7,
+      "score": 17,
       "max": 20
     },
-    "total": 19
+    "total": 70
   }
 }

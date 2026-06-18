@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { join } from 'node:path'
 import Fastify from 'fastify'
 import fastifyStatic from '@fastify/static'
+import prisma from './db.js'
 import routes from './routes/transactions.js'
 
 const app = Fastify({ logger: true })
