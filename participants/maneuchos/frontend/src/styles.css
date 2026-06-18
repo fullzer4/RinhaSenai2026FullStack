@@ -1,0 +1,264 @@
+:root {
+  font-family: Inter, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #122033;
+  background: #f5f7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(180deg, #f7f9fc 0%, #eef3fb 100%);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+nav {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+nav a {
+  color: #1d4ed8;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.page-header {
+  padding: 2rem 1.25rem 1rem;
+}
+
+.page-header h1,
+.panel h2,
+.list-transactions h1,
+.detail-panel h1 {
+  margin: 0;
+}
+
+.muted {
+  color: #5f6b7a;
+  margin: 0.35rem 0 0;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 1rem;
+  padding: 0 1rem 2rem;
+}
+
+.panel,
+.list-transactions,
+.detail-panel,
+.transaction-item,
+.pagination-bar {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+.panel {
+  padding: 1rem;
+}
+
+.payment-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-field.full {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  font-size: 0.9rem;
+  color: #34506f;
+  font-weight: 600;
+}
+
+.form-field input,
+.form-field select,
+.input-card-number,
+.input-holder-name,
+.input-expiration,
+.input-cvv,
+.input-amount,
+.input-description,
+.select-installments {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #d6deea;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.input-card-number:focus,
+.input-holder-name:focus,
+.input-expiration:focus,
+.input-cvv:focus,
+.input-amount:focus,
+.input-description:focus,
+.select-installments:focus {
+  border-color: #1d4ed8;
+}
+
+.btn-pay,
+.btn-refund,
+.btn-prev-page,
+.btn-next-page {
+  border: 0;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  font-weight: 700;
+}
+
+.btn-pay,
+.btn-refund {
+  background: #2563eb;
+  color: #fff;
+}
+
+.btn-pay:hover,
+.btn-refund:hover {
+  background: #1d4ed8;
+}
+
+.feedback-success,
+.feedback-error {
+  margin-top: 0.75rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.feedback-success {
+  background: #e8f7ee;
+  color: #166534;
+}
+
+.feedback-error {
+  background: #fde8e8;
+  color: #b42318;
+}
+
+.balance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.balance-row,
+.transaction-row,
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+}
+
+.list-transactions {
+  margin: 0 1rem 1rem;
+  padding: 1rem;
+}
+
+.transaction-item {
+  padding: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.transaction-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.transaction-grid,
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1rem;
+  margin-top: 0.75rem;
+}
+
+.transaction-id,
+.transaction-status,
+.detail-id,
+.detail-status {
+  font-weight: 700;
+}
+
+.pagination-bar {
+  margin: 0 1rem 2rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pagination-meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-prev-page,
+.btn-next-page {
+  background: #eef2ff;
+  color: #1e3a8a;
+}
+
+.btn-prev-page:disabled,
+.btn-next-page:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.detail-panel {
+  margin: 0 1rem 2rem;
+  padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  .dashboard-grid,
+  .transaction-grid,
+  .detail-grid,
+  .payment-form {
+    grid-template-columns: 1fr;
+  }
+
+  .pagination-bar {
+    align-items: flex-start;
+  }
+}
