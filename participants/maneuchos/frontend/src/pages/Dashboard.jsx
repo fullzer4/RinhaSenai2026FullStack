@@ -15,6 +15,9 @@ export default function Dashboard() {
   const [feedback, setFeedback] = useState(null)
   const [loading, setLoading] = useState(false)
 
+
+  const [amountCents, setAmountCents] = useState(0)
+
   async function loadBalance() {
     const res = await fetch(apiUrl('/api/balance'))
     if (res.ok) {
@@ -25,6 +28,39 @@ export default function Dashboard() {
   useEffect(() => {
     loadBalance()
   }, [])
+
+
+  function formatExpiration(e) {
+    let v = String(e.target.value || '')
+    v = v.replace(/\D/g, '')             
+    if (v.length > 2) {
+      v = v.slice(0, 2) + '/' + v.slice(2, 4)
+    }
+    e.target.value = v.slice(0, 5)      
+  }
+
+
+  function formatCardNumber(e) {
+    let v = String(e.target.value || '')
+    const digits = v.replace(/\D/g, '').slice(0, 16)
+    const parts = []
+    for (let i = 0; i < digits.length; i += 4) parts.push(digits.slice(i, i + 4))
+    e.target.value = parts.join(' ')
+  }
+
+  function formatAmount(e) {
+    let v = String(e.target.value || '')
+    const digits = v.replace(/\D/g, '')
+    if (!digits) {
+      e.target.value = ''
+      setAmountCents(0)
+      return
+    }
+    const cents = parseInt(digits, 10) 
+    setAmountCents(cents)
+    const value = (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    e.target.value = value
+  }
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -38,7 +74,7 @@ export default function Dashboard() {
       holder_name: String(form.get('holder_name') || ''),
       expiration: String(form.get('expiration') || ''),
       cvv: String(form.get('cvv') || '').replace(/\D/g, ''),
-      amount_cents: Number(form.get('amount_cents')),
+      amount_cents: Number(form.get('amount_cents')) || amountCents || 0,
       installments: Number(form.get('installments') || 1),
       description: String(form.get('description') || '')
     }
@@ -54,12 +90,30 @@ export default function Dashboard() {
       if (res.ok && data.status === 'approved') {
         setFeedback({ type: 'success', message: 'Transacao aprovada!' })
         paymentForm.reset()
+        setAmountCents(0)
       } else if (res.ok && data.status === 'declined') {
-        setFeedback({ type: 'error', message: 'Transacao recusada.' })
+
+        let message = 'Transacao recusada.'
+        if (data.error) {
+          message = data.error + (data.field ? ` (campo: ${data.field})` : '')
+        } else if (data.errors) {
+          if (Array.isArray(data.errors)) {
+            message = data.errors
+              .map(err => (typeof err === 'string' ? err : `${err.field || 'campo'}: ${err.message || err.error || JSON.stringify(err)}`))
+              .join('; ')
+          } else if (typeof data.errors === 'object') {
+            message = Object.entries(data.errors)
+              .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
+              .join('; ')
+          } else {
+            message = String(data.errors)
+          }
+        }
+        setFeedback({ type: 'error', message })
       } else {
         setFeedback({
           type: 'error',
-          message: data.error || data.errors?.join(', ') || 'Erro na transacao.'
+          message: data.error || data.errors?.join?.(', ') || 'Erro na transacao.'
         })
       }
     } catch (error) {
@@ -86,23 +140,32 @@ export default function Dashboard() {
           <form className="payment-form" onSubmit={handleSubmit}>
             <div className="form-field full">
               <label htmlFor="card_number">Numero do cartao</label>
-              <input id="card_number" className="input-card-number" name="card_number" inputMode="numeric" maxLength="19" defaultValue="4111111111111111" />
+              <input id="card_number" className="input-card-number" name="card_number" inputMode="numeric" maxLength="19" placeholder="4111 1111 1111 1111" onChange={formatCardNumber} />
             </div>
             <div className="form-field">
               <label htmlFor="holder_name">Nome do titular</label>
-              <input id="holder_name" className="input-holder-name" name="holder_name" maxLength="50" defaultValue="Joao Silva" />
+              <input id="holder_name" className="input-holder-name" name="holder_name" maxLength="50" placeholder="Joao Silva" />
             </div>
             <div className="form-field">
               <label htmlFor="expiration">Validade</label>
-              <input id="expiration" className="input-expiration" name="expiration" placeholder="MM/YY" maxLength="5" defaultValue="12/29" />
+              <input
+                id="expiration"
+                className="input-expiration"
+                name="expiration"
+                placeholder="MM/YY"
+                maxLength="5"
+                aria-placeholder="12/29"
+                onChange={formatExpiration}
+              />
             </div>
             <div className="form-field">
               <label htmlFor="cvv">CVV</label>
-              <input id="cvv" className="input-cvv" name="cvv" inputMode="numeric" maxLength="4" defaultValue="123" />
+              <input id="cvv" className="input-cvv" name="cvv" inputMode="numeric" maxLength="3" placeholder="123" />
             </div>
             <div className="form-field">
-              <label htmlFor="amount_cents">Valor em centavos</label>
-              <input id="amount_cents" className="input-amount" name="amount_cents" type="number" min="1" max="1000000" defaultValue="10000" />
+              <label htmlFor="amount_cents">Valor</label>
+              <input id="amount_display" className="input-amount" name="amount_display" type="text" inputMode="numeric" placeholder="0,00" onChange={formatAmount} />
+              <input type="hidden" name="amount_cents" value={String(amountCents)} />
             </div>
             <div className="form-field">
               <label htmlFor="installments">Parcelas</label>

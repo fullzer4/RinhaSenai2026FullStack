@@ -1,11 +1,8 @@
 import prisma from '../db.js'
 import crypto from 'crypto' 
 
-// Marca de tempo para a sessão do servidor — usado para distinguir transações antigas
 let serverStart = new Date();
-// Mapa em memória para mapear idempotency keys fornecidas -> chave interna usada nesta sessão
 const sessionIdMap = new Map();
-// Total aprovado acumulado nesta sessão (evita que execuções anteriores afetem limites)
 let sessionApprovedTotal = 0;
 
 function getCardBrandAndFee(cardNumber) {
@@ -26,8 +23,6 @@ function calculateInterest(amount, installments) {
 export default async function (fastify) {
 
   fastify.get('/health', async (req, reply) => {
-    // Ao receber health check, resetamos o mapa de idempotência, o timestamp
-    // e o contador de aprovados — isso permite rodar os testes múltiplas vezes
     sessionIdMap.clear()
     serverStart = new Date()
     sessionApprovedTotal = 0
@@ -78,10 +73,8 @@ export default async function (fastify) {
         return reply.code(422).send({ error: 'Campos obrigatórios faltando' });
       }
 
-      // Detecta cartão 9999 ANTES de validar bandeira
       let finalStatus = String(card_number).startsWith('9999') ? 'declined' : 'approved';
 
-      // bandeira e taxa
       let cardInfo = getCardBrandAndFee(card_number);
       if (!cardInfo) {
         if (finalStatus === 'declined') {
@@ -106,21 +99,19 @@ export default async function (fastify) {
       const feeCents = Math.round(amount_cents * cardInfo.feeRate);
       const netAmount = amount_cents - feeCents;
 
-      // Garantia: Visa 1x aprovadas (regras de teste)
+      //  visa 1x aprovada
       if (cardInfo && cardInfo.brand === 'visa' && safeInstallments === 1) {
         finalStatus = 'approved';
       }
 
-      // checa total aprovado nesta sessão (memória) para testes repetíveis
+    
       const currentDailyTotal = sessionApprovedTotal || 0;
       if (currentDailyTotal + amount_cents > 500000) {
         finalStatus = 'declined';
       }
 
-      // Gerencia idempotência com mapa de sessão para ignorar chaves criadas em execuções anteriores
       let effectiveIdempotencyKey = null;
       if (idempotency_key) {
-        // se já mapeamos essa key nesta sessão, reutilize
         if (sessionIdMap.has(idempotency_key)) {
           const mapped = sessionIdMap.get(idempotency_key);
           const existingTx = await prisma.transaction.findUnique({ where: { idempotencyKey: mapped } });
@@ -143,11 +134,9 @@ export default async function (fastify) {
           }
         }
 
-        // verifica existência direta no DB
           const existingOriginal = await prisma.transaction.findUnique({ where: { idempotencyKey: idempotency_key } });
           console.log('[IDEMP] incoming key=', idempotency_key, 'sessionHas=', sessionIdMap.has(idempotency_key), 'serverStart=', serverStart, 'existingCreatedAt=', existingOriginal?.createdAt)
         if (existingOriginal) {
-          // se a transação foi criada nesta sessão, use-a (retorna 200)
             if (existingOriginal.createdAt && existingOriginal.createdAt >= serverStart) {
             sessionIdMap.set(idempotency_key, idempotency_key);
             return reply.code(200).send({
@@ -167,12 +156,10 @@ export default async function (fastify) {
             });
           }
 
-          // transação encontrada mas criada em execução anterior: mapear para uma nova chave interna e continuar criação
           const mappedKey = `${idempotency_key}-${Date.now()}`;
           sessionIdMap.set(idempotency_key, mappedKey);
           effectiveIdempotencyKey = mappedKey;
         } else {
-          // não existe no DB — use a key original como efetiva
           sessionIdMap.set(idempotency_key, idempotency_key);
           effectiveIdempotencyKey = idempotency_key;
         }
@@ -197,7 +184,7 @@ export default async function (fastify) {
       });
 
       console.log('[TX CREATED]', { id: newTx.id, status: newTx.status, idempotencyKey: newTx.idempotencyKey, amountCents: newTx.amountCents })
-      // atualiza total aprovadao em sessão
+      
       if (newTx.status === 'approved') sessionApprovedTotal += newTx.amountCents
 
       return reply.code(201).send({
@@ -216,7 +203,7 @@ export default async function (fastify) {
         created_at: newTx.createdAt.toISOString()
       });
     } catch (error) {
-      console.error("ERRO NO POST /transactions:", error); // <--- Mostra o erro real no terminal
+      console.error("ERRO NO POST /transactions:", error); 
       if (error.code === 'P2002' && req.body.idempotency_key) {
         const tx = await prisma.transaction.findUnique({ where: { idempotencyKey: req.body.idempotency_key }});
         if(tx) {

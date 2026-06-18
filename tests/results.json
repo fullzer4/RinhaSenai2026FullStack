@@ -12,7 +12,22 @@
     },
     {
       "name": "Status approved",
-      "ok": false,
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Bandeira visa (4xxx)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Taxa visa 2.5% (250)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "net_amount = amount - fee (9750)",
+      "ok": true,
       "detail": ""
     },
     {
@@ -87,8 +102,13 @@
     },
     {
       "name": "Estorno approved -> refunded",
-      "ok": false,
-      "detail": "status=undefined"
+      "ok": true,
+      "detail": "status=refunded"
+    },
+    {
+      "name": "Double refund rejeitado 422",
+      "ok": true,
+      "detail": "status=422"
     },
     {
       "name": "Balance funciona",
@@ -114,12 +134,72 @@
     },
     {
       "name": "Elemento .input-card-number",
-      "ok": false,
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .input-holder-name",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .input-expiration",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .input-cvv",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .input-amount",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .select-installments",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .input-description",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .btn-pay",
+      "ok": true,
       "detail": ""
     },
     {
       "name": "Elemento .display-balance",
-      "ok": false,
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .display-total-approved",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .display-total-declined",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .display-total-refunded",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Feedback apos submit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Transacao aprovada via form",
+      "ok": true,
       "detail": ""
     },
     {
@@ -129,22 +209,137 @@
     },
     {
       "name": "Lista de transacoes existe",
-      "ok": false,
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Transacoes no historico",
+      "ok": true,
+      "detail": "10 items"
+    },
+    {
+      "name": "Item tem .transaction-id",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Item tem .transaction-status",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Item tem .transaction-amount",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Item tem .transaction-brand",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Item tem .transaction-installments",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Item tem .transaction-fee",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Item tem .transaction-description",
+      "ok": true,
       "detail": ""
     },
     {
       "name": "Paginacao .pagination-current",
-      "ok": false,
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Paginacao .pagination-pages",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Paginacao .pagination-total",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Paginacao .btn-prev-page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Paginacao .btn-next-page",
+      "ok": true,
       "detail": ""
     },
     {
       "name": "Pagina /transaction/:id carrega",
-      "ok": false,
-      "detail": "sem transacoes"
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-id",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-status",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-amount",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-brand",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-holder",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-card",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-installments",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-fee",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-net",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-description",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-date",
+      "ok": true,
+      "detail": ""
     },
     {
       "name": "SPA fallback (/history sem query)",
-      "ok": false,
+      "ok": true,
       "detail": ""
     }
   ],
@@ -162,12 +357,12 @@
     {
       "name": "Throughput >= 50 txn/s",
       "ok": true,
-      "detail": "496 txn/s, 403ms"
+      "detail": "402 txn/s, 497ms"
     },
     {
       "name": "P95 < 500ms",
       "ok": true,
-      "detail": "p50=37ms p95=53ms p99=55ms avg=38ms"
+      "detail": "p50=46ms p95=60ms p99=80ms avg=48ms"
     },
     {
       "name": "Idempotencia concorrente",
@@ -176,8 +371,8 @@
     },
     {
       "name": "Apenas 1 estorno concorrente",
-      "ok": false,
-      "detail": "0 estornos"
+      "ok": true,
+      "detail": "1 estornos"
     },
     {
       "name": "Read/Write concorrente",
@@ -186,39 +381,39 @@
     }
   ],
   "metrics": {
-    "throughput": 496,
-    "stress_elapsed_ms": 403,
+    "throughput": 402,
+    "stress_elapsed_ms": 497,
     "stress_created": 200,
     "stress_total": 200,
-    "latency_p50_ms": 37,
-    "latency_p95_ms": 53,
-    "latency_p99_ms": 55,
-    "latency_avg_ms": 38
+    "latency_p50_ms": 46,
+    "latency_p95_ms": 60,
+    "latency_p99_ms": 80,
+    "latency_avg_ms": 48
   },
   "summary": {
-    "pass": 27,
-    "fail": 9,
-    "total": 36
+    "pass": 75,
+    "fail": 0,
+    "total": 75
   },
   "scoring": {
     "rules": {
-      "pass": 19,
-      "total": 21,
-      "score": 45,
+      "pass": 25,
+      "total": 25,
+      "score": 50,
       "max": 50
     },
     "frontend": {
-      "pass": 2,
-      "total": 8,
-      "score": 8,
+      "pass": 43,
+      "total": 43,
+      "score": 30,
       "max": 30
     },
     "stress": {
-      "pass": 6,
+      "pass": 7,
       "total": 7,
-      "score": 17,
+      "score": 20,
       "max": 20
     },
-    "total": 70
+    "total": 100
   }
 }
