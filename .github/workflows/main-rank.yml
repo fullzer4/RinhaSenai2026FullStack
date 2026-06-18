@@ -49,7 +49,7 @@ jobs:
             echo "======================================="
 
             cd "$TEAM_DIR"
-            rm -f data.db data.db-*
+            rm -f data.db data.db-* package-lock.json
 
             if ! npm install 2>&1; then
               echo "{\"team\":\"$TEAM\",\"summary\":{\"pass\":0,\"fail\":1,\"total\":1},\"rules\":[],\"frontend\":[],\"stress\":[],\"error\":\"npm install failed\"}" > "../../results/$TEAM.json"
