@@ -1,6 +1,8 @@
 {
-  "team": "nome-do-time",
+  "team": "htv",
   "members": [
-    { "name": "Seu Nome", "github": "@seuuser" }
+    { "name": "João Hartmann", "github": "@jjoaohartmann" },
+    { "name": "Maria Eduarda", "github": "@MariaTessari" },
+    { "name": "Júlia Veríssimo", "github": "@juliaverissimo" },
   ]
 }
