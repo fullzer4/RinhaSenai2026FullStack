@@ -1,0 +1,20 @@
+{
+  "name": "backend",
+  "type": "module",
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:setup": "npm run db:generate && npm run db:push",
+    "start": "npm run db:setup && node src/index.js"
+  },
+  "dependencies": {
+    "fastify": "^5.8.0",
+    "@fastify/static": "^9.0.0",
+    "@prisma/client": "^7.0.0",
+    "@prisma/adapter-libsql": "^7.0.0",
+    "@libsql/client": "^0.15.0"
+  },
+  "devDependencies": {
+    "prisma": "^7.0.0"
+  }
+}
