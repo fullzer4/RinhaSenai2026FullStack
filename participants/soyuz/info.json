@@ -1,0 +1,9 @@
+{
+  "team": "soyuz",
+  "members": [
+    { "name": "Antonio Vedana", "github": "@sessentaeseis" },
+    { "name": "Arthur Wolf", "github": "@awkoode" },
+    { "name": "Lucas Vargas", "github": "@lcsvargas" },
+    { "name": "Miguel Wolf", "github": "@miguel-wolf263" }
+  ]
+}

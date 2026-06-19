@@ -1,9 +1,17 @@
+import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import Fastify from 'fastify'
 import fastifyStatic from '@fastify/static'
 import routes from './routes/transactions.js'
 
-const app = Fastify({ logger: true })
+const frontendRoot = join(import.meta.dirname, '../../frontend/dist')
+const indexHtml = readFileSync(join(frontendRoot, 'index.html'), 'utf8')
+
+const app = Fastify({
+  logger: false,
+  requestTimeout: 0,
+  keepAliveTimeout: 72000
+})
 
 app.addHook('onRequest', (request, reply, done) => {
   const requestedHeaders = request.headers['access-control-request-headers']
@@ -29,10 +37,12 @@ app.addHook('onRequest', (request, reply, done) => {
 app.register(routes, { prefix: '/api' })
 
 app.register(fastifyStatic, {
-  root: join(import.meta.dirname, '../../frontend/dist'),
-  wildcard: false,
+  root: join(frontendRoot, 'assets'),
+  prefix: '/assets/'
 })
 
-app.get('/*', (req, reply) => reply.sendFile('index.html'))
+app.get('/*', (req, reply) => {
+  reply.type('text/html; charset=utf-8').send(indexHtml)
+})
 
 await app.listen({ port: 3000, host: '0.0.0.0' })

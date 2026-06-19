@@ -1,14 +1,17 @@
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
-import { PrismaClient } from '@prisma/client'
+import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import Database from 'better-sqlite3'
 
-const adapter = new PrismaBetterSqlite3({ url: 'file:../data.db' })
-const prisma = new PrismaClient({ adapter })
+const dbPath = resolve(fileURLToPath(new URL('../../data.db', import.meta.url)))
+const db = new Database(dbPath)
 
-await prisma.$executeRawUnsafe('PRAGMA journal_mode = WAL')
-await prisma.$executeRawUnsafe('PRAGMA busy_timeout = 5000')
-await prisma.$executeRawUnsafe('PRAGMA synchronous = NORMAL')
+db.pragma('journal_mode = WAL')
+db.pragma('busy_timeout = 10000')
+db.pragma('synchronous = NORMAL')
+db.pragma('temp_store = MEMORY')
+db.pragma('cache_size = -20000')
 
-await prisma.$executeRawUnsafe(`
+db.exec(`
   CREATE TABLE IF NOT EXISTS transactions (
     id TEXT NOT NULL PRIMARY KEY,
     idempotency_key TEXT NOT NULL UNIQUE,
@@ -23,10 +26,17 @@ await prisma.$executeRawUnsafe(`
     fee_cents INTEGER NOT NULL,
     net_amount INTEGER NOT NULL,
     description TEXT NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-  )
-`)
-await prisma.$executeRawUnsafe('CREATE INDEX IF NOT EXISTS transactions_card_last4_status_created_at_idx ON transactions(card_last4, status, created_at)')
-await prisma.$executeRawUnsafe('CREATE INDEX IF NOT EXISTS transactions_status_idx ON transactions(status)')
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
 
-export default prisma
+  CREATE INDEX IF NOT EXISTS transactions_card_last4_status_created_at_idx
+    ON transactions(card_last4, status, created_at);
+
+  CREATE INDEX IF NOT EXISTS transactions_status_idx
+    ON transactions(status);
+
+  CREATE INDEX IF NOT EXISTS transactions_created_at_idx
+    ON transactions(created_at);
+`)
+
+export default db

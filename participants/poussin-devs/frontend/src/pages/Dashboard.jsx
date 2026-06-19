@@ -70,34 +70,39 @@ export default function Dashboard() {
     <div>
       <header className="page-header">
         <div>
-          <h1>Gateway de Pagamento</h1>
-          <p className="muted">Crie pagamentos, acompanhe o saldo liquido e veja o resultado em tempo real.</p>
+          <p className="eyebrow">Gateway fake</p>
+          <h1>Operacao de pagamento</h1>
         </div>
       </header>
 
       <div className="dashboard-grid">
-        <section className="panel">
-          <h2>Novo pagamento</h2>
+        <section className="panel payment-panel">
+          <div className="panel-heading">
+            <div>
+              <p className="eyebrow">Checkout</p>
+              <h2>Novo pagamento</h2>
+            </div>
+          </div>
           <form className="payment-form" onSubmit={handleSubmit}>
             <div className="form-field full">
               <label htmlFor="card_number">Numero do cartao</label>
-              <input id="card_number" className="input-card-number" name="card_number" inputMode="numeric" maxLength="19" defaultValue="4111111111111111" />
+              <input id="card_number" className="input-card-number" name="card_number" inputMode="numeric" autoComplete="cc-number" maxLength="19" placeholder="4111 1111 1111 1111" required />
             </div>
             <div className="form-field">
               <label htmlFor="holder_name">Nome do titular</label>
-              <input id="holder_name" className="input-holder-name" name="holder_name" maxLength="50" defaultValue="Joao Silva" />
+              <input id="holder_name" className="input-holder-name" name="holder_name" autoComplete="cc-name" maxLength="50" placeholder="Joao Silva" required />
             </div>
             <div className="form-field">
               <label htmlFor="expiration">Validade</label>
-              <input id="expiration" className="input-expiration" name="expiration" placeholder="MM/YY" maxLength="5" defaultValue="12/29" />
+              <input id="expiration" className="input-expiration" name="expiration" autoComplete="cc-exp" placeholder="MM/YY" maxLength="5" required />
             </div>
             <div className="form-field">
               <label htmlFor="cvv">CVV</label>
-              <input id="cvv" className="input-cvv" name="cvv" inputMode="numeric" maxLength="4" defaultValue="123" />
+              <input id="cvv" className="input-cvv" name="cvv" inputMode="numeric" autoComplete="cc-csc" maxLength="4" placeholder="123" required />
             </div>
             <div className="form-field">
               <label htmlFor="amount_cents">Valor em centavos</label>
-              <input id="amount_cents" className="input-amount" name="amount_cents" type="number" min="1" max="1000000" defaultValue="10000" />
+              <input id="amount_cents" className="input-amount" name="amount_cents" type="number" min="1" max="1000000" placeholder="10000" required />
             </div>
             <div className="form-field">
               <label htmlFor="installments">Parcelas</label>
@@ -109,19 +114,24 @@ export default function Dashboard() {
             </div>
             <div className="form-field">
               <label htmlFor="description">Descricao</label>
-              <input id="description" className="input-description" name="description" maxLength="100" defaultValue="Compra SENAI" />
+              <input id="description" className="input-description" name="description" maxLength="100" placeholder="Compra SENAI" required />
             </div>
-            <button className="btn-pay" type="submit" disabled={loading}>{loading ? 'Enviando...' : 'Pagar'}</button>
+            <button className="btn-pay" type="submit" disabled={loading}>{loading ? 'Processando...' : 'Pagar agora'}</button>
           </form>
 
-          {feedback?.type === 'success' && <p className="feedback-success">{feedback.message}</p>}
-          {feedback?.type === 'error' && <p className="feedback-error">{feedback.message}</p>}
+          {feedback?.type === 'success' && <p className="feedback-success" role="status" aria-live="polite">{feedback.message}</p>}
+          {feedback?.type === 'error' && <p className="feedback-error" role="alert">{feedback.message}</p>}
         </section>
 
-        <section className="panel">
-          <h2>Saldo</h2>
+        <section className="panel balance-panel">
+          <div className="panel-heading">
+            <div>
+              <p className="eyebrow">Caixa</p>
+              <h2>Saldo</h2>
+            </div>
+          </div>
           <div className="balance-list">
-            <p className="balance-row"><span>Saldo liquido</span><span className="display-balance" data-value={balance.balance_cents}>{money(balance.balance_cents)}</span></p>
+            <p className="balance-row balance-main"><span>Saldo liquido</span><span className="display-balance" data-value={balance.balance_cents}>{money(balance.balance_cents)}</span></p>
             <p className="balance-row"><span>Aprovadas</span><span className="display-total-approved" data-value={balance.total_approved}>{balance.total_approved}</span></p>
             <p className="balance-row"><span>Recusadas</span><span className="display-total-declined" data-value={balance.total_declined}>{balance.total_declined}</span></p>
             <p className="balance-row"><span>Estornadas</span><span className="display-total-refunded" data-value={balance.total_refunded}>{balance.total_refunded}</span></p>

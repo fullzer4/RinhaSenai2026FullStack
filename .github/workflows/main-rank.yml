@@ -95,7 +95,8 @@ jobs:
 
             kill $SERVER_PID 2>/dev/null
             wait $SERVER_PID 2>/dev/null || true
-            sleep 1
+            fuser -k 3000/tcp 2>/dev/null || true
+            sleep 2
           done
 
       - name: Generate leaderboard
@@ -104,7 +105,13 @@ jobs:
             const fs = require('fs');
             const files = fs.readdirSync('results').filter(f => f.endsWith('.json'));
             const teams = files.map(f => JSON.parse(fs.readFileSync('results/' + f, 'utf8')));
-            teams.sort((a, b) => (b.scoring?.total || 0) - (a.scoring?.total || 0));
+            teams.sort((a, b) => {
+              const scoreDiff = (b.scoring?.total || 0) - (a.scoring?.total || 0);
+              if (scoreDiff !== 0) return scoreDiff;
+              const tputDiff = (b.metrics?.throughput || 0) - (a.metrics?.throughput || 0);
+              if (tputDiff !== 0) return tputDiff;
+              return (a.metrics?.latency_p95_ms || Infinity) - (b.metrics?.latency_p95_ms || Infinity);
+            });
             const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
 
             // LEADERBOARD.md

@@ -1,0 +1,11 @@
+{
+  "name": "soyuz",
+  "private": true,
+  "workspaces": ["backend", "frontend"],
+  "scripts": {
+    "dev": "npm start --workspace=backend & npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=frontend",
+    "clean:db": "node scripts/clean-db.js",
+    "start": "npm start --workspace=backend"
+  }
+}

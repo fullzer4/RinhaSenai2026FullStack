@@ -1,18 +1,123 @@
 import crypto from 'node:crypto'
-import prisma from '../db.js'
+import db from '../db.js'
 
 const DAILY_LIMIT_CENTS = 500000
 
-const locks = new Map()
-function withLock(key, fn) {
-  const previous = locks.get(key) || Promise.resolve()
-  const run = previous.then(fn, fn)
-  locks.set(key, run.catch(() => {}))
-  run.finally(() => {
-    if (locks.get(key) === run) locks.delete(key)
-  })
-  return run
+const TRANSACTION_FIELDS = `
+  id,
+  idempotency_key AS idempotencyKey,
+  status,
+  card_last4 AS cardLast4,
+  card_brand AS cardBrand,
+  holder_name AS holderName,
+  amount_cents AS amountCents,
+  installments,
+  installment_amount AS installmentAmount,
+  total_with_interest AS totalWithInterest,
+  fee_cents AS feeCents,
+  net_amount AS netAmount,
+  description,
+  created_at AS createdAt
+`
+
+const statements = {
+  findById: db.prepare(`SELECT ${TRANSACTION_FIELDS} FROM transactions WHERE id = ?`),
+  findByIdempotencyKey: db.prepare(`SELECT ${TRANSACTION_FIELDS} FROM transactions WHERE idempotency_key = ?`),
+  dailyTotal: db.prepare(`
+    SELECT COALESCE(SUM(total_with_interest), 0) AS total
+    FROM transactions
+    WHERE card_last4 = ? AND status = 'approved' AND created_at >= ?
+  `),
+  insert: db.prepare(`
+    INSERT INTO transactions (
+      id,
+      idempotency_key,
+      status,
+      card_last4,
+      card_brand,
+      holder_name,
+      amount_cents,
+      installments,
+      installment_amount,
+      total_with_interest,
+      fee_cents,
+      net_amount,
+      description,
+      created_at
+    ) VALUES (
+      @id,
+      @idempotencyKey,
+      @status,
+      @cardLast4,
+      @cardBrand,
+      @holderName,
+      @amountCents,
+      @installments,
+      @installmentAmount,
+      @totalWithInterest,
+      @feeCents,
+      @netAmount,
+      @description,
+      @createdAt
+    )
+  `),
+  balance: db.prepare(`
+    SELECT
+      COALESCE(SUM(CASE WHEN status = 'approved' THEN net_amount ELSE 0 END), 0) AS balance_cents,
+      COALESCE(SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END), 0) AS total_approved,
+      COALESCE(SUM(CASE WHEN status = 'declined' THEN 1 ELSE 0 END), 0) AS total_declined,
+      COALESCE(SUM(CASE WHEN status = 'refunded' THEN 1 ELSE 0 END), 0) AS total_refunded
+    FROM transactions
+  `),
+  list: db.prepare(`
+    SELECT ${TRANSACTION_FIELDS}
+    FROM transactions
+    ORDER BY created_at DESC, id DESC
+    LIMIT ? OFFSET ?
+  `),
+  count: db.prepare('SELECT COUNT(*) AS total FROM transactions'),
+  refund: db.prepare("UPDATE transactions SET status = 'refunded' WHERE id = ? AND status = 'approved'")
 }
+
+const createTransaction = db.transaction((data) => {
+  const existing = statements.findByIdempotencyKey.get(data.idempotencyKey)
+  if (existing) return { created: false, tx: existing }
+
+  let status = data.status
+  if (status === 'approved') {
+    const daily = statements.dailyTotal.get(data.cardLast4, startOfTodayIso())
+    if ((daily?.total || 0) + data.totalWithInterest > DAILY_LIMIT_CENTS) {
+      status = 'declined'
+    }
+  }
+
+  const approved = status === 'approved'
+  const tx = {
+    id: crypto.randomUUID(),
+    idempotencyKey: data.idempotencyKey,
+    status,
+    cardLast4: data.cardLast4,
+    cardBrand: data.cardBrand,
+    holderName: data.holderName,
+    amountCents: data.amountCents,
+    installments: data.installments,
+    installmentAmount: data.installmentAmount,
+    totalWithInterest: data.totalWithInterest,
+    feeCents: approved ? data.feeCents : 0,
+    netAmount: approved ? data.netAmount : 0,
+    description: data.description,
+    createdAt: new Date().toISOString()
+  }
+
+  statements.insert.run(tx)
+  return { created: true, tx }
+})
+
+const refundTransaction = db.transaction((id) => {
+  const result = statements.refund.run(id)
+  if (result.changes !== 1) return null
+  return statements.findById.get(id)
+})
 
 function formatTransaction(tx) {
   return {
@@ -28,8 +133,18 @@ function formatTransaction(tx) {
     fee_cents: tx.feeCents,
     net_amount: tx.netAmount,
     description: tx.description,
-    created_at: tx.createdAt.toISOString()
+    created_at: toIsoString(tx.createdAt)
   }
+}
+
+function toIsoString(value) {
+  if (value instanceof Date) return value.toISOString()
+
+  const text = String(value || '')
+  if (text.includes('T')) return text
+
+  const date = new Date(`${text.replace(' ', 'T')}Z`)
+  return Number.isNaN(date.getTime()) ? text : date.toISOString()
 }
 
 function cleanString(value) {
@@ -106,8 +221,6 @@ function calculateAmounts(amountCents, installments, feeRate) {
 
   const totalWithInterest = Math.ceil(amountCents * Math.pow(1 + interestRate, installments))
   const installmentAmount = Math.ceil(totalWithInterest / installments)
-
-  // O benchmark do projeto valida a taxa sobre amount_cents, não sobre total_with_interest.
   const feeCents = Math.round(amountCents * feeRate)
   const netAmount = amountCents - feeCents
 
@@ -123,6 +236,7 @@ function createIdempotencyKey(body) {
     card_number: body.card_number,
     holder_name: cleanString(body.holder_name),
     expiration: body.expiration,
+    cvv: body.cvv,
     amount_cents: body.amount_cents,
     installments: body.installments ?? 1,
     description: cleanString(body.description)
@@ -131,115 +245,87 @@ function createIdempotencyKey(body) {
   return crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex')
 }
 
-function startOfToday() {
+function startOfTodayIso() {
   const d = new Date()
   d.setHours(0, 0, 0, 0)
-  return d
+  return d.toISOString()
+}
+
+function parsePage(query) {
+  return Math.max(parseInt(query.page || '1', 10) || 1, 1)
+}
+
+function parseLimit(query) {
+  return Math.min(Math.max(parseInt(query.limit || '10', 10) || 10, 1), 100)
 }
 
 export default async function (fastify) {
-  fastify.get('/health', async () => ({ status: 'ok' }))
+  fastify.get('/health', () => ({ status: 'ok' }))
 
-  fastify.get('/balance', async () => {
-    const [approvedSum, totalApproved, totalDeclined, totalRefunded] = await Promise.all([
-      prisma.transaction.aggregate({ where: { status: 'approved' }, _sum: { netAmount: true } }),
-      prisma.transaction.count({ where: { status: 'approved' } }),
-      prisma.transaction.count({ where: { status: 'declined' } }),
-      prisma.transaction.count({ where: { status: 'refunded' } })
-    ])
+  fastify.get('/balance', () => statements.balance.get())
 
-    return {
-      balance_cents: approvedSum._sum.netAmount || 0,
-      total_approved: totalApproved,
-      total_declined: totalDeclined,
-      total_refunded: totalRefunded
-    }
-  })
-
-  fastify.post('/transactions', async (req, reply) => {
+  fastify.post('/transactions', (req, reply) => {
     const body = req.body || {}
     const errors = validateBody(body)
     if (errors.length) return reply.code(422).send({ errors })
 
     const cardNumber = body.card_number
     const cardLast4 = cardNumber.slice(-4)
+    const installments = body.installments ?? 1
     const idempotencyKey = createIdempotencyKey(body)
+    const holderName = cleanString(body.holder_name)
+    const description = cleanString(body.description)
+    let status = 'approved'
+    let cardBrand = 'unknown'
+    let feeRate = 0
 
-    return withLock(`card:${cardLast4}`, async () => {
-      const existing = await prisma.transaction.findUnique({ where: { idempotencyKey } })
-      if (existing) return reply.code(200).send(formatTransaction(existing))
+    if (cardNumber.startsWith('9999')) {
+      status = 'declined'
+    } else {
+      const brandInfo = getCardBrand(cardNumber)
+      if (!brandInfo) return reply.code(422).send({ error: 'Bandeira desconhecida' })
+      cardBrand = brandInfo.brand
+      feeRate = brandInfo.feeRate
+    }
 
-      const installments = body.installments ?? 1
-      let status = 'approved'
-      let brand = 'unknown'
-      let feeRate = 0
+    const amounts = calculateAmounts(body.amount_cents, installments, feeRate)
+    if (amounts.totalWithInterest / installments < 1000) {
+      return reply.code(422).send({ error: 'Valor minimo por parcela e R$10,00' })
+    }
 
-      if (cardNumber.startsWith('9999')) {
-        status = 'declined'
-      } else {
-        const brandInfo = getCardBrand(cardNumber)
-        if (!brandInfo) return reply.code(422).send({ error: 'Bandeira desconhecida' })
-        brand = brandInfo.brand
-        feeRate = brandInfo.feeRate
-      }
-
-      const amounts = calculateAmounts(body.amount_cents, installments, feeRate)
-      if (amounts.totalWithInterest / installments < 1000) {
-        return reply.code(422).send({ error: 'Valor minimo por parcela e R$10,00' })
-      }
-
-      if (status === 'approved') {
-        const daily = await prisma.transaction.aggregate({
-          where: {
-            cardLast4,
-            status: 'approved',
-            createdAt: { gte: startOfToday() }
-          },
-          _sum: { totalWithInterest: true }
-        })
-
-        const current = daily._sum.totalWithInterest || 0
-        if (current + amounts.totalWithInterest > DAILY_LIMIT_CENTS) {
-          status = 'declined'
-        }
-      }
-
-      const tx = await prisma.transaction.create({
-        data: {
-          idempotencyKey,
-          status,
-          cardLast4,
-          cardBrand: brand,
-          holderName: cleanString(body.holder_name),
-          amountCents: body.amount_cents,
-          installments,
-          installmentAmount: amounts.installmentAmount,
-          totalWithInterest: amounts.totalWithInterest,
-          feeCents: status === 'approved' ? amounts.feeCents : 0,
-          netAmount: status === 'approved' ? amounts.netAmount : 0,
-          description: cleanString(body.description)
-        }
+    try {
+      const result = createTransaction({
+        idempotencyKey,
+        status,
+        cardLast4,
+        cardBrand,
+        holderName,
+        amountCents: body.amount_cents,
+        installments,
+        installmentAmount: amounts.installmentAmount,
+        totalWithInterest: amounts.totalWithInterest,
+        feeCents: amounts.feeCents,
+        netAmount: amounts.netAmount,
+        description
       })
 
-      return reply.code(201).send(formatTransaction(tx))
-    })
+      return reply.code(result.created ? 201 : 200).send(formatTransaction(result.tx))
+    } catch (error) {
+      if (error?.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+        const tx = statements.findByIdempotencyKey.get(idempotencyKey)
+        if (tx) return reply.code(200).send(formatTransaction(tx))
+      }
+
+      throw error
+    }
   })
 
-  fastify.get('/transactions/:id', async (req, reply) => {
-    const tx = await prisma.transaction.findUnique({ where: { id: req.params.id } })
-    if (!tx) return reply.code(404).send({ error: 'Transacao nao encontrada' })
-    return formatTransaction(tx)
-  })
-
-  fastify.get('/transactions', async (req) => {
-    const page = Math.max(parseInt(req.query.page || '1', 10) || 1, 1)
-    const limit = Math.min(Math.max(parseInt(req.query.limit || '10', 10) || 10, 1), 100)
+  fastify.get('/transactions', (req) => {
+    const page = parsePage(req.query)
+    const limit = parseLimit(req.query)
     const skip = (page - 1) * limit
-
-    const [items, total] = await Promise.all([
-      prisma.transaction.findMany({ orderBy: { createdAt: 'desc' }, skip, take: limit }),
-      prisma.transaction.count()
-    ])
+    const items = statements.list.all(limit, skip)
+    const total = statements.count.get().total
 
     return {
       data: items.map(formatTransaction),
@@ -252,19 +338,15 @@ export default async function (fastify) {
     }
   })
 
-  fastify.post('/transactions/:id/refund', async (req, reply) => {
-    return withLock(`refund:${req.params.id}`, async () => {
-      const result = await prisma.transaction.updateMany({
-        where: { id: req.params.id, status: 'approved' },
-        data: { status: 'refunded' }
-      })
+  fastify.get('/transactions/:id', (req, reply) => {
+    const tx = statements.findById.get(req.params.id)
+    if (!tx) return reply.code(404).send({ error: 'Transacao nao encontrada' })
+    return formatTransaction(tx)
+  })
 
-      if (result.count !== 1) {
-        return reply.code(422).send({ error: 'Transacao nao pode ser estornada' })
-      }
-
-      const tx = await prisma.transaction.findUnique({ where: { id: req.params.id } })
-      return formatTransaction(tx)
-    })
+  fastify.post('/transactions/:id/refund', (req, reply) => {
+    const tx = refundTransaction(req.params.id)
+    if (!tx) return reply.code(422).send({ error: 'Transacao nao pode ser estornada' })
+    return formatTransaction(tx)
   })
 }

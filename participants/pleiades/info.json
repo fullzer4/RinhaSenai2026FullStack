@@ -1,0 +1,8 @@
+{
+  "team": "nome-do-time",
+  "members": [
+    { "name": "Cleyton", "github": "@Pingusto193" },
+    { "name": "Ramos", "github": "@BoaSorteRamos" },
+    { "name": "Guilherme Bruno", "github": "@guilherme_c_bruno@etudante.sesisenai.org.br" }
+  ]
+}
