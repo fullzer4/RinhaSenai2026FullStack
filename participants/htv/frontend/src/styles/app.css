@@ -1,0 +1,70 @@
+/* ===== Layout Principal ===== */
+.app-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* ===== Navegação ===== */
+.app-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding: 18px 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+}
+
+.app-nav a {
+  color: #495057;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 8px 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.app-nav a:hover {
+  color: #0f3460;
+  background: #f1f3f5;
+}
+
+.app-nav a.active {
+  color: white;
+  background: linear-gradient(135deg, #0f3460, #1a1a2e);
+  box-shadow: 0 4px 15px rgba(15, 52, 96, 0.3);
+}
+
+.app-nav .nav-separator {
+  display: none;
+}
+
+.app-nav hr {
+  display: none;
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 15px;
+  }
+
+  .app-nav {
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .app-nav a {
+    width: 100%;
+    text-align: center;
+  }
+}

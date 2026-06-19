@@ -1,0 +1,191 @@
+.detail-container h1 {
+  text-align: center;
+  color: #1a1a2e;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 3px solid #0f3460;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* ===== Loading / Erro ===== */
+.detail-container > p:only-child {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+
+/* ===== Tabela de detalhes ===== */
+.detail-table {
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  border-collapse: collapse;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.detail-table tbody tr {
+  border-bottom: 1px solid #e9ecef;
+  transition: background 0.2s ease;
+}
+
+.detail-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.detail-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.detail-table tbody tr td:first-child {
+  padding: 15px 20px;
+  font-weight: 700;
+  color: #1a1a2e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+  background: #f1f3f5;
+  width: 200px;
+  white-space: nowrap;
+}
+
+.detail-table tbody tr td:last-child {
+  padding: 15px 20px;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+/* ===== Spans de detalhe ===== */
+.detail-id {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.detail-status {
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.detail-status[data-value="approved"] {
+  background: #d4edda;
+  color: #155724;
+}
+
+.detail-status[data-value="declined"] {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.detail-status[data-value="refunded"] {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.detail-amount,
+.detail-installment-amount,
+.detail-total,
+.detail-fee,
+.detail-net {
+  font-weight: 700;
+  color: #0f3460;
+  font-size: 1.05rem;
+}
+
+.detail-brand {
+  font-weight: 600;
+  text-transform: capitalize;
+  color: #495057;
+}
+
+.detail-holder {
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.detail-card {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #1a1a2e;
+  font-size: 1.1rem;
+}
+
+.detail-installments {
+  font-weight: 600;
+  color: #0f3460;
+}
+
+.detail-description {
+  font-style: italic;
+  color: #495057;
+}
+
+.detail-date {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* ===== Botão de estorno ===== */
+.btn-refund {
+  padding: 14px 35px;
+  background: linear-gradient(135deg, #ffc107, #ffb300);
+  color: #1a1a2e;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+  display: block;
+  margin: 30px auto 0;
+}
+
+.btn-refund:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+  background: linear-gradient(135deg, #ffb300, #ffa000);
+}
+
+.btn-refund:active {
+  transform: translateY(0);
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 768px) {
+  .detail-container {
+    padding: 15px;
+  }
+
+  .detail-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .detail-table {
+    font-size: 0.9rem;
+  }
+
+  .detail-table tbody tr td:first-child {
+    width: 120px;
+    padding: 12px 15px;
+    font-size: 0.8rem;
+  }
+
+  .detail-table tbody tr td:last-child {
+    padding: 12px 15px;
+  }
+
+  .btn-refund {
+    width: 100%;
+    padding: 14px 20px;
+  }
+}

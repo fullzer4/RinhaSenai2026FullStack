@@ -1,0 +1,8 @@
+node_modules/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+package-lock.json
+frontend/dist/
+backend/generated/
