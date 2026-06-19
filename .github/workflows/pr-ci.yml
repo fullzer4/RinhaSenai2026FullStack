@@ -28,18 +28,22 @@ jobs:
       - name: Detect team
         id: team
         run: |
-          for dir in participants/*/; do
-            if [ -d "$dir" ] && [ -f "$dir/package.json" ]; then
-              TEAM=$(basename "$dir")
-              echo "team=$TEAM" >> "$GITHUB_OUTPUT"
-              echo "dir=participants/$TEAM" >> "$GITHUB_OUTPUT"
-              echo "skip=false" >> "$GITHUB_OUTPUT"
-              echo "Team: $TEAM"
-              exit 0
-            fi
-          done
-          echo "skip=true" >> "$GITHUB_OUTPUT"
-          echo "Nenhum participante encontrado"
+          CHANGED=$(git diff --name-only origin/main...HEAD -- participants/ | head -1)
+          if [ -z "$CHANGED" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Nenhum participante modificado"
+            exit 0
+          fi
+          TEAM=$(echo "$CHANGED" | cut -d'/' -f2)
+          if [ -d "participants/$TEAM" ] && [ -f "participants/$TEAM/package.json" ]; then
+            echo "team=$TEAM" >> "$GITHUB_OUTPUT"
+            echo "dir=participants/$TEAM" >> "$GITHUB_OUTPUT"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "Team: $TEAM"
+          else
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Participante $TEAM sem package.json"
+          fi
 
       - name: Validate info.json
         if: steps.team.outputs.skip != 'true'
