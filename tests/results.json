@@ -1,0 +1,419 @@
+{
+  "rules": [
+    {
+      "name": "Health check",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "POST retorna 201",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Status approved",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Bandeira visa (4xxx)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Taxa visa 2.5% (250)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "net_amount = amount - fee (9750)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Idempotencia retorna 200",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Bandeira mastercard (5xxx)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Taxa mastercard 3% (600)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Bandeira amex (3xxx)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Bandeira elo (6xxx)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cartao 9999 declined",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Declined salvo (201)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Bandeira invalida 422",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "total_with_interest correto (15919)",
+      "ok": true,
+      "detail": "recebido=15919"
+    },
+    {
+      "name": "installment_amount com ceil (5307)",
+      "ok": true,
+      "detail": "recebido=5307"
+    },
+    {
+      "name": "Taxa sobre amount_cents (375)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "net_amount correto (14625)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Juros 4%/mes (7x)",
+      "ok": true,
+      "detail": "esperado=131594 recebido=131594"
+    },
+    {
+      "name": "Parcela minima R$10 422",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Estorno approved -> refunded",
+      "ok": true,
+      "detail": "status=refunded"
+    },
+    {
+      "name": "Double refund rejeitado 422",
+      "ok": true,
+      "detail": "status=422"
+    },
+    {
+      "name": "Balance funciona",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Declined nao conta no saldo",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Paginacao funciona",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "frontend": [
+    {
+      "name": "Dashboard carrega",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .input-card-number",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .input-holder-name",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .input-expiration",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .input-cvv",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .input-amount",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .select-installments",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .input-description",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .btn-pay",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .display-balance",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .display-total-approved",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .display-total-declined",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Elemento .display-total-refunded",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Feedback apos submit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Transacao aprovada via form",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Pagina /history carrega",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Lista de transacoes existe",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Transacoes no historico",
+      "ok": true,
+      "detail": "9 items"
+    },
+    {
+      "name": "Item tem .transaction-id",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Item tem .transaction-status",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Item tem .transaction-amount",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Item tem .transaction-brand",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Item tem .transaction-installments",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Item tem .transaction-fee",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Item tem .transaction-description",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Paginacao .pagination-current",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Paginacao .pagination-pages",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Paginacao .pagination-total",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Paginacao .btn-prev-page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Paginacao .btn-next-page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Pagina /transaction/:id carrega",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-id",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-status",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-amount",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-brand",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-holder",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-card",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-installments",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-fee",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-net",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-description",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Detalhe .detail-date",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "SPA fallback (/history sem query)",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "stress": [
+    {
+      "name": "200/200 transacoes criadas",
+      "ok": true,
+      "detail": "0 err500, 0 err422"
+    },
+    {
+      "name": "Zero erros 500",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Throughput >= 50 txn/s",
+      "ok": true,
+      "detail": "471 txn/s, 425ms"
+    },
+    {
+      "name": "P95 < 500ms",
+      "ok": true,
+      "detail": "p50=35ms p95=73ms p99=182ms avg=42ms"
+    },
+    {
+      "name": "Idempotencia concorrente",
+      "ok": true,
+      "detail": "201=1 200=9"
+    },
+    {
+      "name": "Apenas 1 estorno concorrente",
+      "ok": true,
+      "detail": "1 estornos"
+    },
+    {
+      "name": "Read/Write concorrente",
+      "ok": true,
+      "detail": "50/50 writes, 50/50 reads"
+    }
+  ],
+  "metrics": {
+    "throughput": 471,
+    "stress_elapsed_ms": 425,
+    "stress_created": 200,
+    "stress_total": 200,
+    "latency_p50_ms": 35,
+    "latency_p95_ms": 73,
+    "latency_p99_ms": 182,
+    "latency_avg_ms": 42
+  },
+  "summary": {
+    "pass": 75,
+    "fail": 0,
+    "total": 75
+  },
+  "scoring": {
+    "rules": {
+      "pass": 25,
+      "total": 25,
+      "score": 50,
+      "max": 50
+    },
+    "frontend": {
+      "pass": 43,
+      "total": 43,
+      "score": 30,
+      "max": 30
+    },
+    "stress": {
+      "pass": 7,
+      "total": 7,
+      "score": 20,
+      "max": 20
+    },
+    "total": 100
+  }
+}
