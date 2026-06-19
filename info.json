@@ -1,0 +1,6 @@
+{
+  "team": "claude-team",
+  "members": [
+    { "name": "Claude", "github": "@anthropic" }
+  ]
+}
