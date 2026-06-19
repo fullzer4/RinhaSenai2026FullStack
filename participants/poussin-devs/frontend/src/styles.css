@@ -1,0 +1,322 @@
+:root {
+  color: #18202a;
+  background: #f4f7fb;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, #eef5f8 0%, #f8fafc 42%, #edf1f6 100%);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 6px;
+  padding: 0 16px;
+  color: #ffffff;
+  background: #145c52;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+button:hover:not(:disabled) {
+  background: #0f4942;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+a {
+  color: #145c52;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 64px;
+  padding: 0 24px;
+  border-bottom: 1px solid #d7e0e8;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.brand {
+  color: #18202a;
+  font-size: 1.15rem;
+}
+
+.nav-links {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.page {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 48px;
+}
+
+.page-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 6px;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+}
+
+h2 {
+  font-size: 1.15rem;
+}
+
+.muted {
+  color: #64748b;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.panel,
+.transaction-item,
+.detail-panel {
+  border: 1px solid #d9e2ea;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(30, 41, 59, 0.07);
+}
+
+.panel,
+.detail-panel {
+  padding: 22px;
+}
+
+.payment-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.form-field {
+  display: grid;
+  gap: 6px;
+}
+
+.form-field.full {
+  grid-column: 1 / -1;
+}
+
+label {
+  color: #334155;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+input,
+select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0 12px;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+input:focus,
+select:focus {
+  outline: 3px solid rgba(20, 92, 82, 0.18);
+  border-color: #145c52;
+}
+
+.btn-pay {
+  grid-column: 1 / -1;
+}
+
+.feedback-success,
+.feedback-error {
+  margin: 16px 0 0;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-weight: 700;
+}
+
+.feedback-success {
+  color: #0f5132;
+  background: #dff6e8;
+}
+
+.feedback-error {
+  color: #842029;
+  background: #f8d7da;
+}
+
+.balance-list,
+.detail-grid,
+.transaction-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.balance-row,
+.detail-row,
+.transaction-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 0;
+  border-bottom: 1px solid #eef2f6;
+  padding-bottom: 10px;
+}
+
+.balance-row:last-child,
+.detail-row:last-child,
+.transaction-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.balance-row span:last-child,
+.detail-row span:last-child,
+.transaction-row span:last-child {
+  overflow-wrap: anywhere;
+  text-align: right;
+  font-weight: 700;
+}
+
+.list-transactions {
+  display: grid;
+  gap: 14px;
+}
+
+.transaction-item {
+  padding: 18px;
+}
+
+.transaction-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.status-pill {
+  border-radius: 999px;
+  padding: 5px 10px;
+  color: #ffffff;
+  background: #475569;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.status-approved {
+  background: #15803d;
+}
+
+.status-declined {
+  background: #b91c1c;
+}
+
+.status-refunded {
+  background: #6d28d9;
+}
+
+.transaction-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.pagination-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.pagination-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-right: auto;
+}
+
+.empty-state {
+  border: 1px dashed #b8c4d1;
+  border-radius: 8px;
+  padding: 24px;
+  color: #64748b;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+@media (max-width: 760px) {
+  .topbar,
+  .page-header,
+  .dashboard-grid,
+  .transaction-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dashboard-grid,
+  .payment-form,
+  .transaction-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page {
+    width: min(100% - 24px, 1120px);
+    padding-top: 24px;
+  }
+
+  .topbar {
+    padding: 14px 16px;
+  }
+}

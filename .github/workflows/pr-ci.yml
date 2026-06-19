@@ -1,7 +1,7 @@
-name: PR Bench
+name: PR CI
 
 on:
-  pull_request:
+  pull_request_target:
     branches: [main]
 
 permissions:
@@ -9,19 +9,16 @@ permissions:
   contents: read
 
 jobs:
-  bench:
+  validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    outputs:
+      team: ${{ steps.team.outputs.team }}
+      dir: ${{ steps.team.outputs.dir }}
+      skip: ${{ steps.team.outputs.skip }}
     steps:
-      - name: Generate App Token
-        id: app-token
-        uses: actions/create-github-app-token@v1
-        with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
-
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
@@ -42,25 +39,98 @@ jobs:
             fi
           done
           echo "skip=true" >> "$GITHUB_OUTPUT"
+          echo "Nenhum participante encontrado"
 
-      - name: Install participant
+      - name: Validate info.json
+        if: steps.team.outputs.skip != 'true'
+        run: |
+          TEAM="${{ steps.team.outputs.team }}"
+          DIR="${{ steps.team.outputs.dir }}"
+          node -e "
+            const fs = require('fs');
+            const info = JSON.parse(fs.readFileSync('$DIR/info.json', 'utf8'));
+            const errors = [];
+            if (info.team !== '$TEAM') errors.push('team nao bate com pasta');
+            if (!Array.isArray(info.members) || info.members.length < 1) errors.push('members vazio');
+            (info.members || []).forEach(m => {
+              if (!m.name || !m.github?.startsWith('@')) errors.push('membro invalido: ' + JSON.stringify(m));
+            });
+            if (errors.length) { errors.forEach(e => console.error(e)); process.exit(1); }
+            console.log('info.json OK: team=' + info.team + ', ' + info.members.length + ' membros');
+          "
+
+      - name: Validate package.json
+        if: steps.team.outputs.skip != 'true'
+        run: |
+          node -e "
+            const pkg = require('./${{ steps.team.outputs.dir }}/package.json');
+            if (!pkg.scripts?.build || !pkg.scripts?.start) { console.error('scripts build/start faltando'); process.exit(1); }
+            console.log('package.json OK');
+          "
+
+      - name: Check forbidden files
+        run: |
+          BAD=$(git diff --name-only origin/main...HEAD 2>/dev/null | grep -E '(node_modules/|\.db$)' || true)
+          if [ -n "$BAD" ]; then
+            echo "::error::Arquivos proibidos: $BAD"
+            exit 1
+          fi
+
+      - name: Install + Build + Start + Health
         if: steps.team.outputs.skip != 'true'
         working-directory: ${{ steps.team.outputs.dir }}
+        timeout-minutes: 3
         run: |
-          rm -f data.db data.db-*
+          rm -f package-lock.json
+          npm install
+          npm run build
+          npm start &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3000/api/health > /dev/null 2>&1 && break
+            [ $i -eq 30 ] && echo "::error::Server timeout" && exit 1
+            sleep 1
+          done
+          curl -sf http://localhost:3000/ > /dev/null || (echo "::error::Frontend nao servido" && exit 1)
+          echo "Validacao OK"
+          kill %1 2>/dev/null || true
+
+  bench:
+    needs: validate
+    if: needs.validate.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Generate App Token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install participant
+        working-directory: ${{ needs.validate.outputs.dir }}
+        run: |
+          rm -f data.db data.db-* package-lock.json
           npm install
           npm run build
 
       - name: Install tests (Playwright)
-        if: steps.team.outputs.skip != 'true'
         working-directory: tests
         run: |
           npm install
           npx playwright install chromium --with-deps
 
       - name: Start server
-        if: steps.team.outputs.skip != 'true'
-        working-directory: ${{ steps.team.outputs.dir }}
+        working-directory: ${{ needs.validate.outputs.dir }}
         run: |
           npm start &
           for i in $(seq 1 30); do
@@ -71,18 +141,17 @@ jobs:
 
       - name: Run tests
         id: bench
-        if: steps.team.outputs.skip != 'true'
         continue-on-error: true
         run: node --test tests/run.js
 
       - name: Post results
-        if: steps.team.outputs.skip != 'true' && steps.app-token.outputs.token && always()
+        if: steps.app-token.outputs.token && always()
         uses: actions/github-script@v7
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |
             const fs = require('fs');
-            const team = '${{ steps.team.outputs.team }}';
+            const team = '${{ needs.validate.outputs.team }}';
 
             let results;
             try {
@@ -171,7 +240,7 @@ jobs:
             });
 
       - name: Fail if tests have errors
-        if: steps.team.outputs.skip != 'true' && steps.bench.outcome != 'success'
+        if: steps.bench.outcome != 'success'
         run: |
           echo "::error::Testes falharam — merge bloqueado"
           exit 1
