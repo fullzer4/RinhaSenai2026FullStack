@@ -1,4 +1,4 @@
-node_modules/
+node_modugitles/
 *.db
 *.db-journal
 *.db-wal
