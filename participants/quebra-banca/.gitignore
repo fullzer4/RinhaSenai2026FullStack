@@ -1,0 +1,25 @@
+# Dependências
+node_modules/
+
+# Build do frontend
+frontend/dist/
+
+# Banco de dados SQLite
+backend/data.db
+backend/data.db-shm
+backend/data.db-wal
+
+# Locks (cada dev roda npm install)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# SO / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
