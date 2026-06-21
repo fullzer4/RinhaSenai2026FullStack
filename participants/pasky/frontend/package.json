@@ -1,0 +1,24 @@
+{
+  "name": "rinha-fullstack",
+  "version": "1.0.0",
+  "description": "Minimalist frontend project for Rinha FullStack",
+  "main": "src/main.jsx",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.18.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^2.2.0",
+    "vite": "^3.2.11"
+  },
+  "keywords": [],
+  "author": "Arthur Macucci",
+  "license": "MIT",
+  "type": "commonjs"
+}

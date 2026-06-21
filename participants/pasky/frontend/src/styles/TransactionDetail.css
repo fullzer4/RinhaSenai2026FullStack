@@ -1,0 +1,85 @@
+.transaction-detail {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.btn-back {
+  padding: 0.5rem 1rem;
+  background: var(--gray-200);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+  background: var(--gray-300);
+}
+
+.detail-card h2 {
+  margin-bottom: 1.5rem;
+  color: var(--gray-900);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.detail-row label {
+  color: var(--gray-600);
+  font-weight: 600;
+}
+
+.detail-row span {
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.detail-status {
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.status-approved {
+  background: var(--success);
+  color: white;
+}
+
+.status-declined {
+  background: var(--danger);
+  color: white;
+}
+
+.status-refunded {
+  background: var(--warning);
+  color: white;
+}
+
+.btn-refund {
+  padding: 0.75rem 1.5rem;
+  background: var(--danger);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: all 0.3s ease;
+  width: auto;
+}
+
+.btn-refund:hover {
+  opacity: 0.9;
+}
