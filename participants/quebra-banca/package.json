@@ -1,0 +1,11 @@
+{
+  "name": "gateway-senai",
+  "private": true,
+  "scripts": {
+    "install": "cd backend && npm install && cd ../frontend && npm install",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && node src/server.js",
+    "dev:back": "cd backend && node --watch src/server.js",
+    "dev:front": "cd frontend && npm run dev"
+  }
+}
