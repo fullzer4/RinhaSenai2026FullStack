@@ -1,0 +1,37 @@
+// Schema Prisma - Rinha FullStack SENAI 2026 (time: davidefreitas)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Transaction {
+  id                  String   @id @default(uuid())
+  status              String // approved | declined | refunded
+  card_last4          String
+  card_brand          String // visa | mastercard | amex | elo
+  holder_name         String
+  amount_cents        Int
+  installments        Int
+  installment_amount  Int
+  total_with_interest Int
+  fee_cents           Int
+  net_amount          Int
+  description         String
+  created_at          DateTime @default(now())
+
+  // Etapa 7: chave de idempotencia (hash dos campos da requisicao).
+  // O unique no banco e a ultima linha de defesa contra duplicatas -
+  // a primeira linha de defesa e o lock em memoria (services/mutex.js).
+  idempotency_key     String   @unique
+
+  // acelera a soma do limite diario por cartao (Etapa 7): filtra por
+  // card_last4 + status='approved' + intervalo de created_at
+  @@index([card_last4, status, created_at])
+  // acelera os totais de /api/balance (Etapa 8)
+  @@index([status])
+}

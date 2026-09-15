@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "postinstall": "prisma generate",
+    "prestart": "prisma migrate deploy",
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "@fastify/static": "^7.0.4",
+    "@prisma/client": "^5.19.1",
+    "fastify": "^4.28.1"
+  },
+  "devDependencies": {
+    "prisma": "^5.19.1"
+  }
+}
